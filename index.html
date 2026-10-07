@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viatto Pay - Tu dinero seguro en Cartagena</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'viatto-night': '#061712', /* Verde Noche (Casi negro) */
+            'viatto-mint': '#00FFA3',  /* Verde Menta Acento */
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #030c08;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Contenedor Mockup Celular (centrado en PC, full en pantallas pequeñas) */
+    .mobile-container {
+      position: relative;
+      width: 100%;
+      max-width: 425px;
+      height: 100vh;
+      max-height: 900px;
+      overflow: hidden;
+      background: #38bdf8;
+      box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    @media (min-width: 640px) {
+      .mobile-container {
+        height: 875px;
+        border-radius: 46px;
+        border: 7px solid #142720;
+      }
+    }
+
+    /* Isla dinámica en la parte superior (desktop/tablet) */
+    .phone-notch {
+      position: absolute;
+      top: 11px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 106px;
+      height: 26px;
+      background: #000;
+      border-radius: 18px;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    /* ======================================================== */
+    /* FONDO DE CIELO VIVO CON NUBES DESENFOCADAS Y MANCHAS     */
+    /* ======================================================== */
+    .sky-background {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #25b0f5 0%, #38bdf8 35%, #7ed4fc 72%, #bae6fd 100%);
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* Nubes orgánicas desenfocadas generadas en CSS */
+    .cloud-layer {
+      position: absolute;
+      inset: -25px;
+      filter: blur(36px);
+      pointer-events: none;
+      opacity: 0.92;
+    }
+
+    .cloud-blob-1 {
+      position: absolute;
+      top: -6%;
+      left: -18%;
+      width: 340px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0) 80%);
+      border-radius: 50%;
+      animation: cloudDrift1 24s ease-in-out infinite alternate;
+    }
+
+    .cloud-blob-2 {
+      position: absolute;
+      top: 25%;
+      right: -24%;
+      width: 380px;
+      height: 290px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.48) 50%, rgba(255, 255, 255, 0) 78%);
+      border-radius: 50%;
+      animation: cloudDrift2 28s ease-in-out infinite alternate;
+    }
+
+    .cloud-blob-3 {
+      position: absolute;
+      bottom: 10%;
+      left: -12%;
+      width: 390px;
+      height: 310px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.5) 45%, rgba(255, 255, 255, 0) 80%);
+      border-radius: 50%;
+      animation: cloudDrift1 20s ease-in-out infinite alternate-reverse;
+    }
+
+    .cloud-blob-4 {
+      position: absolute;
+      top: 48%;
+      left: 28%;
+      width: 260px;
+      height: 190px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.3) 42%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      animation: cloudDrift2 22s ease-in-out infinite alternate;
+    }
+
+    @keyframes cloudDrift1 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 22px) scale(1.09); }
+    }
+
+    @keyframes cloudDrift2 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-35px, -28px) scale(1.12); }
+    }
+
+    /* ======================================================== */
+    /* STICKERS: ANIMACIÓN DE ONDA, DESENFOQUE Y COMPORTAMIENTOS*/
+    /* ======================================================== */
+    .stickers-wrapper {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    .sticker-element {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      object-fit: contain;
+      opacity: 0;
+      filter: blur(16px) drop-shadow(0 14px 22px rgba(6, 23, 18, 0.2));
+      transform: translate(-50%, -50%) scale(0.1);
+      transition: 
+        left 1.9s cubic-bezier(0.16, 0.9, 0.28, 1.25),
+        top 1.9s cubic-bezier(0.16, 0.9, 0.28, 1.25),
+        opacity 1.2s ease-out,
+        filter 1.8s ease-out;
+      will-change: transform, left, top, opacity, filter;
+    }
+
+    /* Tamaño estándar para los 9 stickers periféricos */
+    .sticker-peripheral {
+      width: 80px;
+      height: 80px;
+    }
+
+    /* TAMAÑO SIGNIFICATIVAMENTE MAYOR PARA EL STICKER 1 (LA MOJARRA) */
+    .sticker-mojarra {
+      width: 145px;
+      height: 145px;
+      z-index: 15; /* Prioridad de capa visual */
+    }
+
+    /* Keyframes de onda (wave) y flotación orgánica constante */
+    @keyframes waveFloatingA {
+      0% {
+        transform: translate(calc(-50% + 0px), calc(-50% + 0px)) rotate(var(--rot));
+        filter: blur(var(--base-blur, 0.5px)) drop-shadow(0 10px 18px rgba(6, 23, 18, 0.18));
+      }
+      25% {
+        transform: translate(calc(-50% + 12px), calc(-50% - 15px)) rotate(calc(var(--rot) + 4deg));
+        filter: blur(calc(var(--base-blur, 0.5px) + 0.6px)) drop-shadow(0 15px 24px rgba(6, 23, 18, 0.23));
+      }
+      50% {
+        transform: translate(calc(-50% - 8px), calc(-50% - 24px)) rotate(calc(var(--rot) - 3deg));
+        filter: blur(calc(var(--base-blur, 0.5px) + 1.2px)) drop-shadow(0 20px 28px rgba(6, 23, 18, 0.16));
+      }
+      75% {
+        transform: translate(calc(-50% - 14px), calc(-50% - 9px)) rotate(calc(var(--rot) - 5deg));
+        filter: blur(calc(var(--base-blur, 0.5px) + 0.5px)) drop-shadow(0 12px 18px rgba(6, 23, 18, 0.2));
+      }
+      100% {
+        transform: translate(calc(-50% + 0px), calc(-50% + 0px)) rotate(var(--rot));
+        filter: blur(var(--base-blur, 0.5px)) drop-shadow(0 10px 18px rgba(6, 23, 18, 0.18));
+      }
+    }
+
+    @keyframes waveFloatingB {
+      0% {
+        transform: translate(calc(-50% + 0px), calc(-50% + 0px)) rotate(var(--rot));
+        filter: blur(var(--base-blur, 0.5px)) drop-shadow(0 10px 18px rgba(6, 23, 18, 0.18));
+      }
+      25% {
+        transform: translate(calc(-50% - 13px), calc(-50% + 14px)) rotate(calc(var(--rot) - 5deg));
+        filter: blur(calc(var(--base-blur, 0.5px) + 0.7px)) drop-shadow(0 8px 16px rgba(6, 23, 18, 0.24));
+      }
+      50% {
+        transform: translate(calc(-50% + 9px), calc(-50% + 22px)) rotate(calc(var(--rot) + 4deg));
+        filter: blur(calc(var(--base-blur, 0.5px) + 1.1px)) drop-shadow(0 6px 14px rgba(6, 23, 18, 0.15));
+      }
+      75% {
+        transform: translate(calc(-50% + 15px), calc(-50% + 6px)) rotate(calc(var(--rot) + 6deg));
+        filter: blur(calc(var(--base-blur, 0.5px) + 0.4px)) drop-shadow(0 10px 18px rgba(6, 23, 18, 0.2));
+      }
+      100% {
+        transform: translate(calc(-50% + 0px), calc(-50% + 0px)) rotate(var(--rot));
+        filter: blur(var(--base-blur, 0.5px)) drop-shadow(0 10px 18px rgba(6, 23, 18, 0.18));
+      }
+    }
+
+    /* Animación especial de onda más suave y amplia para la Mojarra */
+    @keyframes waveMojarra {
+      0% {
+        transform: translate(-50%, -50%) rotate(var(--rot));
+        filter: blur(var(--base-blur, 0.3px)) drop-shadow(0 14px 24px rgba(6, 23, 18, 0.28));
+      }
+      33% {
+        transform: translate(calc(-50% + 10px), calc(-50% - 18px)) rotate(calc(var(--rot) + 5deg)) scale(1.03);
+        filter: blur(calc(var(--base-blur, 0.3px) + 0.5px)) drop-shadow(0 20px 32px rgba(6, 23, 18, 0.22));
+      }
+      66% {
+        transform: translate(calc(-50% - 10px), calc(-50% + 14px)) rotate(calc(var(--rot) - 4deg)) scale(0.98);
+        filter: blur(calc(var(--base-blur, 0.3px) + 0.8px)) drop-shadow(0 10px 18px rgba(6, 23, 18, 0.3));
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(var(--rot));
+        filter: blur(var(--base-blur, 0.3px)) drop-shadow(0 14px 24px rgba(6, 23, 18, 0.28));
+      }
+    }
+
+    .wave-anim-a { animation: waveFloatingA 5.4s ease-in-out infinite; }
+    .wave-anim-b { animation: waveFloatingB 6.1s ease-in-out infinite; }
+    .wave-anim-mojarra { animation: waveMojarra 5.8s ease-in-out infinite; }
+
+    /* Pulso en el splash inicial */
+    @keyframes pulseSplash {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 16px rgba(0, 255, 163, 0.28)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 28px rgba(0, 255, 163, 0.6)); }
+    }
+    .splash-logo-pulse {
+      animation: pulseSplash 2.6s ease-in-out infinite;
+    }
+
+    /* Interacciones en botones */
+    .btn-auth {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-auth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -6px rgba(6, 23, 18, 0.5);
+    }
+    .btn-auth:active {
+      transform: translateY(1px) scale(0.99);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Contenedor Principal (Simulación Celular) -->
+  <div class="mobile-container relative flex flex-col justify-between" id="appWrapper">
+    
+    <!-- Notch iPhone para vista en PC -->
+    <div class="phone-notch hidden sm:block"></div>
+
+    <!-- ======================================================== -->
+    <!-- FASE 1: SPLASH SCREEN (0 a 5 Segundos)                   -->
+    <!-- Fondo Verde Noche (#061712) y Logo Centrado              -->
+    <!-- ======================================================== -->
+    <div id="splashScreen" class="absolute inset-0 z-40 bg-[#061712] flex flex-col items-center justify-center transition-all duration-1000 ease-in-out px-8">
+      
+      <!-- Logo Principal Centrado -->
+      <div class="flex flex-col items-center justify-center space-y-6 splash-logo-pulse">
+        <div class="w-48 h-32 flex items-center justify-center">
+          <img 
+            id="splashLogo" 
+            src="LOGOS/logo.png" 
+            onerror="this.onerror=null; this.src='LOGOS/LOGO.svg'; if(this.src.includes('LOGO.svg')) { this.onerror=function(){ this.src='LOGOS/ISOTIPO.svg'; } }"
+            alt="Logo Viatto Pay" 
+            class="max-w-full max-h-full object-contain"
+          >
+        </div>
+      </div>
+
+      <!-- Barra de progreso minimalista -->
+      <div class="absolute bottom-12 w-36 h-1 bg-white/10 rounded-full overflow-hidden">
+        <div id="splashProgressBar" class="h-full bg-[#00FFA3] rounded-full transition-all duration-[4900ms] ease-out w-0"></div>
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- FONDO DE CIELO AZUL VIVO CON NUBES DESENFOCADAS CSS      -->
+    <!-- ======================================================== -->
+    <div class="sky-background">
+      <div class="cloud-layer">
+        <div class="cloud-blob-1"></div>
+        <div class="cloud-blob-2"></div>
+        <div class="cloud-blob-3"></div>
+        <div class="cloud-blob-4"></div>
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- FASE 2: CAPA DE STICKERS FLOTANTES (1 al 10)             -->
+    <!-- STICKER 1 (Mojarra): Mayor tamaño, centrado cerca copy   -->
+    <!-- STICKERS 2-10: Dispersos de forma caótica en los bordes  -->
+    <!-- ======================================================== -->
+    <div class="stickers-wrapper" id="stickersWrapper">
+      
+      <!-- STICKER 1: LA MOJARRA (Grande, centrado justo sobre el título hero) -->
+      <img 
+        src="STICKERS/1.png" 
+        alt="Sticker 1 - La Mojarra" 
+        class="sticker-element sticker-mojarra" 
+        data-target-x="50%" 
+        data-target-y="21%" 
+        data-rotation="-7" 
+        data-blur="0.3px" 
+        data-anim="wave-anim-mojarra"
+      >
+
+      <!-- 9 STICKERS RESTANTES: Dispersos de manera caótica hacia bordes y esquinas -->
+      <!-- Esquina Superior Izquierda -->
+      <img src="STICKERS/2.png" alt="Sticker 2" class="sticker-element sticker-peripheral" data-target-x="13%" data-target-y="9%"  data-rotation="18"  data-blur="1.2px" data-anim="wave-anim-a">
+      <!-- Borde Superior Derecho -->
+      <img src="STICKERS/3.png" alt="Sticker 3" class="sticker-element sticker-peripheral" data-target-x="88%" data-target-y="8%"  data-rotation="-16" data-blur="0.6px" data-anim="wave-anim-b">
+      <!-- Borde Lateral Izquierdo Superior -->
+      <img src="STICKERS/4.png" alt="Sticker 4" class="sticker-element sticker-peripheral" data-target-x="8%"  data-target-y="27%" data-rotation="12"  data-blur="0.9px" data-anim="wave-anim-a">
+      <!-- Borde Lateral Derecho Medio-Superior -->
+      <img src="STICKERS/5.png" alt="Sticker 5" class="sticker-element sticker-peripheral" data-target-x="93%" data-target-y="25%" data-rotation="-22" data-blur="1.4px" data-anim="wave-anim-b">
+      <!-- Borde Lateral Izquierdo Medio -->
+      <img src="STICKERS/6.png" alt="Sticker 6" class="sticker-element sticker-peripheral" data-target-x="7%"  data-target-y="45%" data-rotation="-10" data-blur="0.5px" data-anim="wave-anim-b">
+      <!-- Borde Lateral Derecho Medio -->
+      <img src="STICKERS/7.png" alt="Sticker 7" class="sticker-element sticker-peripheral" data-target-x="94%" data-target-y="44%" data-rotation="19"  data-blur="1.1px" data-anim="wave-anim-a">
+      <!-- Borde Lateral Izquierdo Inferior -->
+      <img src="STICKERS/8.png" alt="Sticker 8" class="sticker-element sticker-peripheral" data-target-x="11%" data-target-y="65%" data-rotation="-14" data-blur="0.8px" data-anim="wave-anim-a">
+      <!-- Borde Lateral Derecho Inferior -->
+      <img src="STICKERS/9.png" alt="Sticker 9" class="sticker-element sticker-peripheral" data-target-x="89%" data-target-y="63%" data-rotation="15"  data-blur="0.4px" data-anim="wave-anim-b">
+      <!-- Flotando Arriba Centro (Inclinado caótico) -->
+      <img src="STICKERS/10.png" alt="Sticker 10" class="sticker-element sticker-peripheral" data-target-x="50%" data-target-y="6%"  data-rotation="-19" data-blur="1.6px" data-anim="wave-anim-b">
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- FASE 3: INTERFAZ DE REGISTRO MINIMALISTA                 -->
+    <!-- (Sin logos superiores, sellos ni textos sueltos)         -->
+    <!-- ======================================================== -->
+    <div id="registrationUI" class="relative z-20 flex flex-col justify-between h-full px-7 pt-12 pb-8 opacity-0 transition-opacity duration-1000 ease-out pointer-events-none">
+      
+      <!-- Espaciador superior para compensar y dejar aire a la Mojarra -->
+      <div class="h-28"></div>
+
+      <!-- BLOQUE CENTRAL (TEXTOS) -->
+      <div class="flex flex-col items-center text-center my-auto px-2">
+        
+        <!-- TÍTULO HERO -->
+        <h1 class="text-3xl sm:text-[32px] font-black tracking-tight text-[#061712] leading-[1.12] mb-3 uppercase drop-shadow-sm">
+          EVITE PAGAR MOJARRAS A 500 MIL
+        </h1>
+
+        <!-- SUBTÍTULO RESUMIDO -->
+        <p class="text-base sm:text-[17px] font-semibold text-[#061712]/90 leading-snug">
+          Tu dinero seguro en Cartagena con Viatto Pay.
+        </p>
+
+      </div>
+
+      <!-- BLOQUE INFERIOR (BOTONES DE AUTENTICACIÓN) -->
+      <div class="flex flex-col items-center w-full space-y-3.5">
+        
+        <!-- TEXTO LEGAL -->
+        <p class="text-[10px] text-center text-[#061712]/75 leading-tight px-3 font-normal max-w-[340px]">
+          Al autenticarte y crear una cuenta, aceptas el Acuerdo de Usuario, la Política de Privacidad y el Consentimiento E-SIGN aplicables al uso de los servicios.
+        </p>
+
+        <!-- BOTÓN 1: INICIAR SESIÓN CON APPLE (FONDO NEGRO / VERDE NOCHE) -->
+        <button type="button" class="btn-auth w-full h-[52px] bg-[#061712] text-white font-medium rounded-2xl flex items-center justify-center space-x-3 shadow-lg">
+          <!-- Icono Oficial Apple SVG -->
+          <svg class="w-5 h-5 fill-current mb-0.5" viewBox="0 0 170 170">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.59-7.71-11.72-14-4.88-7.4-8.88-15.6-12-24.62-3.12-9.01-4.68-17.76-4.68-26.25 0-14.82 4.13-27.18 12.38-37.07 8.25-9.9 18.55-14.93 30.9-15.09 4.35 0 9.24 1.11 14.67 3.35 5.43 2.24 9.17 3.35 11.22 3.35 1.7 0 5.67-1.19 11.91-3.57 6.24-2.38 11.47-3.35 15.69-2.92 11.64 1.18 20.94 5.92 27.91 14.22-10.42 6.36-15.52 14.98-15.3 25.86.22 8.64 3.49 15.93 9.8 21.87 6.31 5.94 13.88 9.54 22.71 10.8-2.39 7.08-5.33 14.49-8.82 22.23zM119.22 32.64c0-7.23 2.66-14.08 7.98-20.55 5.32-6.47 11.87-10.66 19.65-12.57.11 1.08.16 2.06.16 2.92 0 7.12-2.82 14.07-8.46 20.85-5.64 6.78-12.44 10.9-20.4 12.36-.21-1.08-.32-2.09-.32-3.01z"/>
+          </svg>
+          <span class="text-[15px] font-semibold tracking-wide">Iniciar Sesión con Apple</span>
+        </button>
+
+        <!-- BOTÓN 2: INICIAR SESIÓN CON GOOGLE (FONDO NEGRO CON ÍCONO A COLOR) -->
+        <button type="button" class="btn-auth w-full h-[52px] bg-[#061712] text-white font-medium rounded-2xl flex items-center justify-center space-x-3 shadow-lg">
+          <!-- Icono Oficial Google SVG a Color -->
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span class="text-[15px] font-semibold tracking-wide">Iniciar Sesión con Google</span>
+        </button>
+
+        <!-- ACCESO ALTERNATIVO -->
+        <div class="pt-1">
+          <a href="#login-phone" class="text-sm font-semibold text-[#061712] hover:text-[#00FFA3] transition-colors underline-offset-4 hover:underline">
+            Número de teléfono
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT: SECUENCIA DE FASES Y ANIMACIÓN DE STICKERS   -->
+  <!-- ======================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const splashScreen = document.getElementById('splashScreen');
+      const splashProgressBar = document.getElementById('splashProgressBar');
+      const registrationUI = document.getElementById('registrationUI');
+      const stickers = document.querySelectorAll('.sticker-element');
+      const appWrapper = document.getElementById('appWrapper');
+
+      // Animación de la barra de progreso al cargar
+      setTimeout(() => {
+        if (splashProgressBar) splashProgressBar.style.width = '100%';
+      }, 50);
+
+      // Fallback elegante por si alguna imagen no está disponible
+      stickers.forEach((img) => {
+        img.onerror = function() {
+          this.onerror = null;
+          const svgFallback = encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 90 90">
+              <rect width="80" height="80" x="5" y="5" rx="22" fill="#061712" stroke="#00FFA3" stroke-width="3"/>
+              <text x="45" y="52" fill="#00FFA3" font-size="20" font-family="sans-serif" font-weight="bold" text-anchor="middle">★</text>
+            </svg>
+          `);
+          this.src = `data:image/svg+xml;utf8,${svgFallback}`;
+        };
+      });
+
+      // Configurar estado inicial de todos los stickers en el centro con desenfoque
+      stickers.forEach((sticker) => {
+        sticker.style.left = '50%';
+        sticker.style.top = '50%';
+        sticker.style.transform = 'translate(-50%, -50%) scale(0.1)';
+        sticker.style.opacity = '0';
+        sticker.style.filter = 'blur(18px)';
+      });
+
+      // ===================================================================
+      // FASE 1 -> FASE 2: Transición a los 5 segundos (5000ms)
+      // ===================================================================
+      setTimeout(() => {
+        // Fade-out suave de pantalla de carga
+        splashScreen.style.opacity = '0';
+        splashScreen.style.pointerEvents = 'none';
+
+        setTimeout(() => {
+          splashScreen.style.display = 'none';
+        }, 1000);
+
+        // FASE 2: Disparo de los 10 stickers desde el centro
+        animateStickersFromCenter();
+
+        // FASE 3: Aparición de la interfaz limpia una vez posicionados los stickers
+        setTimeout(() => {
+          registrationUI.style.opacity = '1';
+          registrationUI.style.pointerEvents = 'auto';
+        }, 1150);
+
+      }, 5000); // 5 segundos exactos
+
+
+      // Función de animación y dispersión de stickers
+      function animateStickersFromCenter() {
+        stickers.forEach((sticker, index) => {
+          const targetX = sticker.getAttribute('data-target-x') || '50%';
+          const targetY = sticker.getAttribute('data-target-y') || '50%';
+          const targetRotation = sticker.getAttribute('data-rotation') || '0';
+          const targetBlur = sticker.getAttribute('data-blur') || '0.5px';
+          const animClass = sticker.getAttribute('data-anim') || 'wave-anim-a';
+
+          // Salida con timing orgánico
+          const delay = index === 0 ? 0 : 80 + (index * 70);
+
+          setTimeout(() => {
+            sticker.style.opacity = '1';
+            sticker.style.left = targetX;
+            sticker.style.top = targetY;
+            sticker.style.setProperty('--rot', `${targetRotation}deg`);
+            sticker.style.setProperty('--base-blur', targetBlur);
+            
+            // Desenfoque y sombra de impacto
+            sticker.style.filter = `blur(${targetBlur}) drop-shadow(0 14px 22px rgba(6, 23, 18, 0.22))`;
+            sticker.style.transform = `translate(-50%, -50%) scale(1) rotate(${targetRotation}deg)`;
+
+            // Al estabilizarse en su posición, inicia el movimiento de onda permanente
+            setTimeout(() => {
+              sticker.classList.add(animClass);
+            }, 1900);
+
+          }, delay);
+        });
+      }
+
+      // Parallax reactivo al cursor y giro
+      let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+
+      appWrapper.addEventListener('mousemove', (e) => {
+        const rect = appWrapper.getBoundingClientRect();
+        targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 18;
+        targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 18;
+      });
+
+      appWrapper.addEventListener('mouseleave', () => {
+        targetX = 0;
+        targetY = 0;
+      });
+
+      function parallaxLoop() {
+        mouseX += (targetX - mouseX) * 0.08;
+        mouseY += (targetY - mouseY) * 0.08;
+
+        stickers.forEach((sticker, idx) => {
+          // La mojarra (idx 0) tiene mayor reactividad para dar tridimensionalidad
+          const depth = idx === 0 ? 0.75 : (0.35 + ((idx % 4) * 0.25));
+          const px = mouseX * depth;
+          const py = mouseY * depth;
+          sticker.style.setProperty('--px', `${px}px`);
+          sticker.style.setProperty('--py', `${py}px`);
+        });
+
+        requestAnimationFrame(parallaxLoop);
+      }
+      parallaxLoop();
+
+    });
+  </script>
+</body>
+</html>
