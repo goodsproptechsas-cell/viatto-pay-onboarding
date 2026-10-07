@@ -18,8 +18,8 @@
       theme: {
         extend: {
           colors: {
-            'viatto-night': '#08100A', /* Verde Noche estricto */
-            'viatto-mint': '#00FFA3',  /* Verde Menta Acento */
+            'viatto-night': '#08100A',
+            'viatto-mint': '#00FFA3',
           },
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
@@ -30,7 +30,10 @@
   </script>
 
   <style>
-    /* Reseteo para móvil nativo estricto: cero scroll, cero rebotes */
+    /* ======================================================== */
+    /* BLINDAJE DE CAPAS (Z-INDEX EN CSS NATIVO INCONDICIONAL)  */
+    /* No depende de Tailwind ni se ve afectado por retraso CDN */
+    /* ======================================================== */
     html, body {
       width: 100%;
       height: 100%;
@@ -46,18 +49,42 @@
       -webkit-user-select: none;
     }
 
-    /* ======================================================== */
-    /* FONDO CIELO Y NUBES EN CSS: CERO FILTER BLUR            */
-    /* Nubes logradas con gradientes radiales suaves (feather) */
-    /* ======================================================== */
+    #splashScreen {
+      position: absolute;
+      inset: 0;
+      z-index: 999 !important;
+      background-color: #08100A;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.7s ease-out;
+    }
+
+    #registrationUI {
+      position: relative;
+      z-index: 990 !important;
+    }
+
     .sky-bg {
       position: absolute;
       inset: 0;
-      z-index: 1;
+      z-index: 1 !important;
       background: linear-gradient(180deg, #22acf3 0%, #38bdf8 35%, #7ed4fc 70%, #bae6fd 100%);
       overflow: hidden;
     }
 
+    .stickers-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 10 !important;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* ======================================================== */
+    /* NUBES EN CSS (CERO BLUR, GRADIENTES SUAVES FEATHER)      */
+    /* ======================================================== */
     .cloud-layer {
       position: absolute;
       inset: 0;
@@ -116,17 +143,9 @@
     }
 
     /* ======================================================== */
-    /* CAPA DE STICKERS: z-index: 10                            */
-    /* Nítidos, 0% blur, solo drop-shadow y wave                */
+    /* STICKERS: TAMAÑOS AUMENTADOS SIGNIFICATIVAMENTE          */
+    /* Cero blur, solo drop-shadow y animación wave continua   */
     /* ======================================================== */
-    .stickers-layer {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
     .sticker-item {
       position: absolute;
       top: 50%;
@@ -142,81 +161,53 @@
       will-change: transform, left, top, opacity;
     }
 
-    /* Sticker 1 (Mojarra): Mayor tamaño visual */
+    /* Sticker 1 (Mojarra): Mucho más grande */
     .sticker-mojarra {
-      width: 125px;
-      height: 125px;
-      max-width: 32vw;
-      max-height: 32vw;
-      z-index: 12;
+      width: 170px;
+      height: 170px;
+      max-width: 45vw;
+      max-height: 45vw;
+      z-index: 15;
       filter: drop-shadow(0 14px 22px rgba(8, 16, 10, 0.3));
     }
 
-    /* Stickers periféricos (2 al 10) */
+    /* Stickers periféricos (2 al 10): Más destacados */
     .sticker-peripheral {
-      width: 66px;
-      height: 66px;
-      max-width: 18vw;
-      max-height: 18vw;
+      width: 95px;
+      height: 95px;
+      max-width: 25vw;
+      max-height: 25vw;
     }
 
-    /* Animación de onda constante (Wave / Flotación Orgánica sin blur) */
+    /* Animaciones continuas de onda (Wave) */
     @keyframes waveFloatingA {
-      0% {
-        transform: translate(-50%, -50%) rotate(var(--rot));
-      }
-      25% {
-        transform: translate(calc(-50% + 8px), calc(-50% - 12px)) rotate(calc(var(--rot) + 4deg));
-      }
-      50% {
-        transform: translate(calc(-50% - 6px), calc(-50% - 18px)) rotate(calc(var(--rot) - 3deg));
-      }
-      75% {
-        transform: translate(calc(-50% - 9px), calc(-50% - 6px)) rotate(calc(var(--rot) - 5deg));
-      }
-      100% {
-        transform: translate(-50%, -50%) rotate(var(--rot));
-      }
+      0% { transform: translate(-50%, -50%) rotate(var(--rot)); }
+      25% { transform: translate(calc(-50% + 8px), calc(-50% - 12px)) rotate(calc(var(--rot) + 4deg)); }
+      50% { transform: translate(calc(-50% - 6px), calc(-50% - 18px)) rotate(calc(var(--rot) - 3deg)); }
+      75% { transform: translate(calc(-50% - 9px), calc(-50% - 6px)) rotate(calc(var(--rot) - 5deg)); }
+      100% { transform: translate(-50%, -50%) rotate(var(--rot)); }
     }
 
     @keyframes waveFloatingB {
-      0% {
-        transform: translate(-50%, -50%) rotate(var(--rot));
-      }
-      25% {
-        transform: translate(calc(-50% - 9px), calc(-50% + 10px)) rotate(calc(var(--rot) - 4deg));
-      }
-      50% {
-        transform: translate(calc(-50% + 7px), calc(-50% + 16px)) rotate(calc(var(--rot) + 3deg));
-      }
-      75% {
-        transform: translate(calc(-50% + 11px), calc(-50% + 5px)) rotate(calc(var(--rot) + 5deg));
-      }
-      100% {
-        transform: translate(-50%, -50%) rotate(var(--rot));
-      }
+      0% { transform: translate(-50%, -50%) rotate(var(--rot)); }
+      25% { transform: translate(calc(-50% - 9px), calc(-50% + 10px)) rotate(calc(var(--rot) - 4deg)); }
+      50% { transform: translate(calc(-50% + 7px), calc(-50% + 16px)) rotate(calc(var(--rot) + 3deg)); }
+      75% { transform: translate(calc(-50% + 11px), calc(-50% + 5px)) rotate(calc(var(--rot) + 5deg)); }
+      100% { transform: translate(-50%, -50%) rotate(var(--rot)); }
     }
 
     @keyframes waveMojarra {
-      0% {
-        transform: translate(-50%, -50%) rotate(var(--rot));
-      }
-      33% {
-        transform: translate(calc(-50% + 7px), calc(-50% - 12px)) rotate(calc(var(--rot) + 4deg)) scale(1.02);
-      }
-      66% {
-        transform: translate(calc(-50% - 7px), calc(-50% + 9px)) rotate(calc(var(--rot) - 3deg)) scale(0.99);
-      }
-      100% {
-        transform: translate(-50%, -50%) rotate(var(--rot));
-      }
+      0% { transform: translate(-50%, -50%) rotate(var(--rot)); }
+      33% { transform: translate(calc(-50% + 7px), calc(-50% - 12px)) rotate(calc(var(--rot) + 4deg)) scale(1.02); }
+      66% { transform: translate(calc(-50% - 7px), calc(-50% + 9px)) rotate(calc(var(--rot) - 3deg)) scale(0.99); }
+      100% { transform: translate(-50%, -50%) rotate(var(--rot)); }
     }
 
     .wave-anim-a { animation: waveFloatingA 5.2s ease-in-out infinite; }
     .wave-anim-b { animation: waveFloatingB 5.8s ease-in-out infinite; }
     .wave-anim-mojarra { animation: waveMojarra 5.5s ease-in-out infinite; }
 
-    /* Pulso sutil del logo en la carga */
+    /* Pulso sutil del logo en carga */
     @keyframes pulseSplash {
       0%, 100% { transform: scale(1); filter: drop-shadow(0 0 16px rgba(0, 255, 163, 0.3)); }
       50% { transform: scale(1.04); filter: drop-shadow(0 0 24px rgba(0, 255, 163, 0.6)); }
@@ -237,16 +228,15 @@
 </head>
 <body class="bg-[#08100A]">
 
-  <!-- CONTENEDOR PRINCIPAL: h-screen min-h-screen como fallback antes de h-[100dvh] -->
+  <!-- CONTENEDOR PRINCIPAL -->
   <main class="h-screen min-h-screen h-[100dvh] min-h-[100dvh] max-h-[100dvh] w-full overflow-hidden relative flex flex-col justify-between" id="appMain">
 
     <!-- ======================================================== -->
-    <!-- FASE 1: PANTALLA DE CARGA (0 a 3 SEGUNDOS)               -->
-    <!-- Fondo #08100A, Logo: LOGOS/LOGO.svg                      -->
+    <!-- FASE 1: PANTALLA DE CARGA (#splashScreen z-index: 999)    -->
     <!-- ======================================================== -->
-    <div id="splashScreen" class="absolute inset-0 z-50 bg-[#08100A] flex flex-col items-center justify-center px-6 transition-opacity duration-700 ease-out">
+    <div id="splashScreen" class="px-6">
       
-      <!-- Logo centrado usando estrictamente LOGOS/LOGO.svg -->
+      <!-- Logo centrado -->
       <div class="flex flex-col items-center justify-center space-y-6 splash-logo-pulse">
         <div class="w-48 h-32 flex items-center justify-center">
           <img 
@@ -258,7 +248,7 @@
         </div>
       </div>
 
-      <!-- Barra de progreso minimalista (3 segundos exactos) -->
+      <!-- Barra de progreso minimalista (3 segundos) -->
       <div class="absolute bottom-10 w-32 h-1 bg-white/10 rounded-full overflow-hidden">
         <div id="splashProgressBar" class="h-full bg-[#00FFA3] rounded-full transition-all duration-[2900ms] ease-out w-0"></div>
       </div>
@@ -266,7 +256,7 @@
 
 
     <!-- ======================================================== -->
-    <!-- FONDO DE CIELO AZUL VIVO CON NUBES CSS (CERO BLUR)       -->
+    <!-- FONDO DE CIELO AZUL VIVO CON NUBES CSS (.sky-bg z-index: 1)-->
     <!-- ======================================================== -->
     <div class="sky-bg">
       <div class="cloud-layer">
@@ -279,11 +269,11 @@
 
 
     <!-- ======================================================== -->
-    <!-- FASE 2: CAPA DE STICKERS (Nítidos, CERO Blur)            -->
+    <!-- FASE 2: CAPA DE STICKERS (.stickers-layer z-index: 10)   -->
     <!-- ======================================================== -->
     <div class="stickers-layer" id="stickersLayer">
       
-      <!-- STICKER 1: LA MOJARRA (Grande, flotando arriba/centro cerca del copy) -->
+      <!-- STICKER 1: LA MOJARRA (170px, centrado arriba cerca del copy) -->
       <img 
         src="STICKERS/1.png" 
         alt="Sticker 1 - La Mojarra" 
@@ -294,7 +284,7 @@
         data-anim="wave-anim-mojarra"
       >
 
-      <!-- STICKERS 2 AL 10: Dispersión caótica periférica nítida -->
+      <!-- STICKERS 2 AL 10: Dispersión periférica destacada (95px) -->
       <img src="STICKERS/2.png" alt="Sticker 2" class="sticker-item sticker-peripheral" data-target-x="14%" data-target-y="9%"  data-rotation="18"  data-anim="wave-anim-a">
       <img src="STICKERS/3.png" alt="Sticker 3" class="sticker-item sticker-peripheral" data-target-x="86%" data-target-y="8%"  data-rotation="-16" data-anim="wave-anim-b">
       <img src="STICKERS/4.png" alt="Sticker 4" class="sticker-item sticker-peripheral" data-target-x="10%" data-target-y="27%" data-rotation="14"  data-anim="wave-anim-a">
@@ -308,10 +298,10 @@
 
 
     <!-- ======================================================== -->
-    <!-- FASE 3: INTERFAZ DE REGISTRO                             -->
-    <!-- relative isolate transform-gpu z-[99] (Garantía Android) -->
+    <!-- FASE 3: INTERFAZ DE REGISTRO (#registrationUI z-index:990)-->
+    <!-- Sin transform-gpu ni isolate para compatibilidad Xiaomi  -->
     <!-- ======================================================== -->
-    <div id="registrationUI" class="relative isolate transform-gpu z-[99] flex flex-col justify-between h-full px-6 pt-10 pb-6 opacity-0 transition-opacity duration-1000 ease-out pointer-events-none">
+    <div id="registrationUI" class="flex flex-col justify-between h-full px-6 pt-10 pb-6 opacity-0 transition-opacity duration-1000 ease-out pointer-events-none">
       
       <!-- Espacio superior compensado para la Mojarra -->
       <div class="h-28 flex-shrink-0"></div>
@@ -383,12 +373,12 @@
       const registrationUI = document.getElementById('registrationUI');
       const stickers = document.querySelectorAll('.sticker-item');
 
-      // Iniciar barra de carga con duración de 3 segundos
+      // Barra de progreso (3 segundos)
       setTimeout(() => {
         if (splashProgressBar) splashProgressBar.style.width = '100%';
       }, 50);
 
-      // Estado inicial de todos los stickers en el centro (Nítidos, sin blur)
+      // Estado inicial en el centro sin blur
       stickers.forEach((sticker) => {
         sticker.style.left = '50%';
         sticker.style.top = '50%';
@@ -400,16 +390,16 @@
       // FASE 1 -> FASE 2: A LOS 3 SEGUNDOS EXACTOS (3000ms)
       // ===================================================================
       setTimeout(() => {
-        // Fade-out suave de la pantalla de carga
+        // Fade-out suave de pantalla de carga
         splashScreen.style.opacity = '0';
         splashScreen.style.pointerEvents = 'none';
 
-        // Ocultar totalmente el Splash para no bloquear la pantalla
+        // Ocultar totalmente para no bloquear toques
         setTimeout(() => {
           splashScreen.style.display = 'none';
         }, 700);
 
-        // FASE 2: Dispersión de stickers desde el centro absoluto
+        // FASE 2: Animación de salida de stickers
         animateStickersFromCenter();
 
         // FASE 3: Fade-in de la interfaz (#registrationUI)
@@ -428,7 +418,7 @@
           const targetRotation = sticker.getAttribute('data-rotation') || '0';
           const animClass = sticker.getAttribute('data-anim') || 'wave-anim-a';
 
-          // Salida orgánica y fluida
+          // Salida escalonada y orgánica
           const delay = index === 0 ? 0 : 60 + (index * 55);
 
           setTimeout(() => {
@@ -438,7 +428,7 @@
             sticker.style.setProperty('--rot', `${targetRotation}deg`);
             sticker.style.transform = `translate(-50%, -50%) scale(1) rotate(${targetRotation}deg)`;
 
-            // Al estabilizarse en su posición, arranca la onda continua (wave)
+            // Al estabilizarse, inicia la flotación continua
             setTimeout(() => {
               sticker.classList.add(animClass);
             }, 1800);
